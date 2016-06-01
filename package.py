@@ -162,6 +162,28 @@ class LogBookAppBuilder(object):
                     'CFBundleDisplayName = "{name}";\n'
                 ).format(name=name).encode('utf-16le'))
 
+    def make_zip(self, version):
+        """
+        アプリケーションバンドルののzipアーカイブを作成する
+        """
+        destination = os.path.dirname(self.app_dir)
+        filename = 'LogBook-OSX-{}-pushbullet.zip'.format(version)
+        zip_path = os.path.join(destination, filename)
+
+        if os.path.exists(zip_path):
+            os.unlink(zip_path)
+
+        with ZipFile(zip_path, 'w') as zip:
+            for dirpath, dirnames, filenames in os.walk(self.app_dir):
+                for filename in filenames:
+                    filepath = os.path.join(dirpath, filename)
+                    arc_name = os.path.relpath(filepath, destination)
+                    zip.write(filepath, arc_name)
+                for dirname in dirnames:
+                    filepath = os.path.join(dirpath, dirname)
+                    arc_name = os.path.relpath(filepath, destination) + os.path.sep
+                    zip.write(filepath, arc_name)
+
     def extract_zip(self, source):
         """
         Zipアーカイブの内容をアプリケーションバンドル内に展開する
@@ -222,6 +244,7 @@ def main():
         builder.make_icon(args.icon)
     builder.make_plist(version)
     builder.localize()
+    builder.make_zip(version)
 
 
 if __name__ == '__main__':
