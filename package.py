@@ -167,7 +167,7 @@ class LogBookAppBuilder(object):
         アプリケーションバンドルののzipアーカイブを作成する
         """
         destination = os.path.dirname(self.app_dir)
-        filename = 'LogBook-OSX-{}-pushbullet.zip'.format(version)
+        filename = 'LogBook-OSX-{}.zip'.format(version)
         zip_path = os.path.join(destination, filename)
 
         if os.path.exists(zip_path):
