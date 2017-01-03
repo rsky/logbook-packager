@@ -11,13 +11,13 @@ from zipfile import ZipFile
 
 
 # 各種ファイル・ディレクトリ名
-APP_NAME = 'LogBook.app'
 EXECUTABLE_NAME = 'LogBook.py'
 ICON_FILE_NAME = 'LogBook.icns'
 ICON_SET_NAME = 'LogBook.iconset'
 JAR_NAME = 'logbook-kai.jar'
 
 # バンドル情報
+DEFAULT_APP_NAME = 'LogBook.app'
 DEFAULT_BUNDLE_IDENTIFIER = 'com.github.sanaehirotaka.logbook-kai'
 DEFAULT_BUNDLE_NAME = 'LogBook'
 DISPLAY_NAME = 'LogBook'
@@ -33,10 +33,10 @@ EXECUTABLE_PERM = 0o755
 
 
 class LogBookAppBuilder(object):
-    def __init__(self, bundle_identifier, bundle_name, destination):
+    def __init__(self, app_name, bundle_identifier, bundle_name, destination):
         self.bundle_identifier = bundle_identifier
         self.bundle_name = bundle_name
-        self.app_dir = os.path.join(destination, APP_NAME)
+        self.app_dir = os.path.join(destination, app_name)
         self.contents_dir = os.path.join(self.app_dir, 'Contents')
         self.java_dir = os.path.join(self.contents_dir, 'Java')
         self.resources_dir = os.path.join(self.contents_dir, 'Resources')
@@ -209,6 +209,8 @@ def getargs():
     parser.add_argument('-D', '--destination', metavar='DEST_DIR',
                         default='build',
                         help='出力先ディレクトリ')
+    parser.add_argument('-A', '--app-name', metavar='NAME',
+                        default=DEFAULT_APP_NAME, help='アプリケーション名')
     parser.add_argument('-N', '--bundle-name', metavar='NAME',
                         default=DEFAULT_BUNDLE_NAME, help='バンドル名')
     parser.add_argument('-B', '--bundle-identifier', metavar='IDENTIFIER',
@@ -230,7 +232,12 @@ def main():
         if m:
             version = m.group(1)
 
-    builder = LogBookAppBuilder(bundle_name=args.bundle_name,
+    app_name = args.app_name
+    if not app_name.endswith('.app'):
+        app_name += '.app'
+
+    builder = LogBookAppBuilder(app_name=app_name,
+                                bundle_name=args.bundle_name,
                                 bundle_identifier=args.bundle_identifier,
                                 destination=args.destination)
     builder.prepare()
