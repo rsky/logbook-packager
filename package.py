@@ -100,7 +100,8 @@ class LogBookAppBuilder(object):
         if version:
             info['CFBundleShortVersionString'] = version
         path = os.path.join(self.contents_dir, 'Info.plist')
-        plistlib.writePlist(info, path)
+        with open(path, 'wb') as f:
+            plistlib.dump(info, f)
 
     def make_icon(self, source):
         """
